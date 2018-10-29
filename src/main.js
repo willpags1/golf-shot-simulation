@@ -21,11 +21,11 @@ var particles;
 var shotControl = {
     dt: 0.001, //seconds
     displaySpeed: 1.0, // display time multiplier
-    initSpeedMPH: 100,
-    initVerticalAngleDegrees: 22,
-    initHorizontalAngleDegrees: 9,
+    initSpeedMPH: 110,
+    initVerticalAngleDegrees:20,
+    initHorizontalAngleDegrees: 0,
     initBackspinRPM: 6000,
-    initSpinAngle: 45,
+    initSideSpin: 0,
     shoot: beginShot
 }
 var sceneZOffset;
@@ -35,7 +35,8 @@ var statusElementTime;
 var statusElementSpeed;
 var statusElementHeight;
 var statusElementDistance;
-var statusElementSpin;
+var statusElementBackSpin;
+var statusElementSideSpin;
 
 function init() {
     // add renderer
@@ -51,7 +52,7 @@ function init() {
     statusElementSpeed = document.getElementById('status-speed');
     statusElementHeight = document.getElementById('status-height');
     statusElementDistance = document.getElementById('status-distance');
-    statusElementSpin = document.getElementById('status-spin');
+    statusElementBackSpin = document.getElementById('status-spin');
 
     // add stats
     stats = new Stats();
@@ -70,11 +71,11 @@ function init() {
     // add dat.gui
     gui = new dat.GUI({ autoPlace: false });
     container.appendChild(gui.domElement);
-    gui.add(shotControl, 'initSpeedMPH', 50, 150);
+    gui.add(shotControl, 'initSpeedMPH', 50, 200);
     gui.add(shotControl, 'initVerticalAngleDegrees', 0, 90);
     gui.add(shotControl, 'initHorizontalAngleDegrees', -45, 45);
-    gui.add(shotControl, 'initBackspinRPM', 0, 6000);
-    gui.add(shotControl, 'initSpinAngle', -45, 45);
+    gui.add(shotControl, 'initBackspinRPM', 0, 10000);
+    gui.add(shotControl, 'initSideSpin', -5000, 5000);
     gui.add(shotControl, 'displaySpeed', 0, 5);
     gui.add(shotControl, 'shoot');
 
@@ -113,8 +114,8 @@ function onWindowResize() {
 }
 
 function addInitialElements() {
-    var gridWidth = 60;
-    var gridHeight = 300;
+    var gridWidth = 100;
+    var gridHeight = 350;
 
     sceneZOffset = -gridHeight/2.0;
 
@@ -179,8 +180,8 @@ function updateShot() {
     var lineColor = new THREE.Color(0xe34f4f);
     var splineInterpolationNum = 2;
 
-    if (displayTimeElapsed <= shot.points.length) {       
-        var point = shot.points[displayTimeElapsed];        
+    if (displayTimeElapsed <= shot.points.length) {
+        var point = shot.points[displayTimeElapsed];
         if (point == null) {
             return;
         }
@@ -198,7 +199,7 @@ function updateShot() {
         statusElementSpeed.innerHTML =  toMPH(point.velocity.length()).toFixed(1) + ' mph';
         statusElementHeight.innerHTML =  convertedPosition.y.toFixed(0) + ' yds';
         statusElementDistance.innerHTML =  convertedPosition.z.toFixed(0) + ' yds';
-        statusElementSpin.innerHTML =  toRPM(point.angularVelocity.length()).toFixed(0) + ' rpm';
+        statusElementBackSpin.innerHTML =  toRPM(point.angularVelocity.length()).toFixed(0) + ' rpm';
 
         // for adding particles
         // if (points.length % 10 == 0) {
